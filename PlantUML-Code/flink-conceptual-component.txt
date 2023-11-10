@@ -1,0 +1,44 @@
+@startuml
+!theme mars
+title Conceptual flink architecture
+package "Apache Flink Ecosystem" {
+
+    package "Flink Cluster" {
+        
+        [JobManager] as JM
+        [TaskManagers] as TM
+        [Dispatcher] as D
+        [ResourceManager] as RM
+        [JobMaster] as JMs
+        [State Backend (Optional)] as SB
+
+        JM --> RM : Allocates Resources
+        JM --> D : Receives Job Submission
+        JM <-- JMs : Oversees Execution
+        TM <-- JM : deploy tasks
+        TM --> JM : Send status
+        TM --> SB : Checkpoint/Restore state
+
+    }
+
+    package "Flink API" {
+        [DataStream API] as DS
+        [Table API & SQL] as T
+        [FlinkCEP] as FC
+        [Python API] as Py
+    }
+    package "Flink Client" {
+
+
+    [Client] as C
+}
+
+    DS <--> C : Define job
+    T <--> C : Define job
+    FC <--> C : Define job
+    Py <--> C : Define job
+    C --> JM : Submit job
+
+}
+
+@enduml

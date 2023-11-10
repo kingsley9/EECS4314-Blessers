@@ -1,0 +1,86 @@
+@startuml
+title Stream Processing in flink
+!pragma teoz true
+
+box "Flink.ss" #LightBlue
+    participant "Core.ss" as Core
+end box
+
+box "Runtime.ss" #LightGreen
+    participant "JobManager.ss" as JM
+    participant "JobMaster.ss" as JMs
+    participant "TaskExecutor.ss" as TE
+end box
+
+box "TaskManager.ss" #LightPink
+    box  "Task.ss" 
+        participant "Task.java" as TaskCore
+        participant "RuntimeEnvironment.java" as RuntimeEnv
+        participant "AsynchronousException.java" as AsyncEx
+    end box
+    box "Manager.ss" 
+        participant "TaskManagerActions.java" as TMActions
+        participant "TaskExecutionState.java" as TExecState
+        participant "CheckpointResponder.java" as CkptResponder
+    end box
+    participant "Network.ss" as Network
+    participant "Memory.ss" as Memory
+end box
+
+activate Core
+Core -> JM : Send Stream Data
+
+activate JM
+JM -> TE : Assign Streaming Task to TaskExecutor
+
+activate TE
+TE -> TaskCore : Initiate Stream Processing Task
+activate TaskCore
+note right of TaskCore : Start Task Lifecycle
+
+TaskCore -> RuntimeEnv : Setup Stream Processing Environment
+activate RuntimeEnv
+RuntimeEnv --> TaskCore : Return Stream Configurations
+deactivate RuntimeEnv
+
+
+TaskCore -> TMActions : Trigger Window Operations
+activate TMActions
+
+TMActions -> TExecState : Check Streaming Task Execution State
+activate TExecState
+TExecState --> TMActions : Return State Info
+deactivate TExecState
+
+TMActions -> CkptResponder : Initiate Stream Checkpointing
+activate CkptResponder
+CkptResponder --> TMActions : Confirm Checkpointing
+deactivate CkptResponder
+
+TMActions -> TaskCore : Update Stream Processing Status
+deactivate TMActions
+
+TaskCore -> Network : Emit Processed Stream
+activate Network
+Network -> TaskCore : Confirm Stream Emit
+deactivate Network
+
+TaskCore -> Memory : Log Stream Processing Memory Usage
+activate Memory
+Memory -> TaskCore : Return Memory Info
+deactivate Memory
+
+TaskCore -> AsyncEx : Check for Asynchronous Stream Processing Exceptions
+activate AsyncEx
+AsyncEx --> TaskCore : Handle Stream Processing Exceptions
+deactivate AsyncEx
+
+TaskCore -> TE : Inform Stream Processing Completion
+note right of TaskCore : End Task Lifecycle
+deactivate TaskCore
+
+TE -> JMs : Notify JobMaster of Stream Processing Completion
+activate JMs
+JMs -> TE : Update Stream Task Execution Status
+
+@enduml

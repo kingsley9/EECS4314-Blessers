@@ -1,0 +1,59 @@
+@startuml
+!theme mars
+left to right direction
+title Apache Flink Concrete Architecture - Task Manager
+package "flink" {
+
+    [Core.ss]
+
+    package [Runtime.ss] {
+
+        [JobMaster.ss] as JMs
+        [State.ss]
+        [Checkpoint.ss]
+
+        package "TaskManager.ss" {
+
+            package [Task.ss] as T {
+                [Task.java]
+                [RuntimeEnvironment.java]
+                [DispatcherThreadFactory.java]
+                [AsynchronousException.java]
+                [AsyncExceptionHandler.java]
+            }
+
+            package [Manager.ss] as Manager {
+                [TaskManagerActions.java]
+                [TaskActions.java]
+                [TaskExecutionState.java]
+                [NoOpTaskActions.java]
+                [CheckpointResponder.java]
+            }
+
+            package [Network.ss] as Net {
+                [TaskManagerLocation.java]
+                [UnresolvedTaskManagerLocation.java]
+                [NettyShuffleEnvironmentConfiguration.java]
+            }
+
+            package [Memory.ss] as Mem {
+                [MemoryLogger.java]
+                [TaskManagerRuntimeInfo.java]
+                [InputGateWithMetrics.java]
+            }
+        }
+
+        [Runtime.ss] -up-> Core.ss
+
+        Manager --> [Checkpoint.ss]
+        Mem --> [Checkpoint.ss]
+        T --> [Checkpoint.ss]
+        JMs <-up-> Net
+        JMs <--> Manager
+        Mem <-up- T
+        T --> Manager
+        [State.ss] <--> Manager
+
+    }
+}
+@enduml

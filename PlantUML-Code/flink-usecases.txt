@@ -1,0 +1,36 @@
+@startuml
+
+title Use Case Diagram for Apache Flink
+left to right direction
+rectangle "Apache Flink" {
+
+
+' Define use cases within Apache Flink
+usecase "Process Streams" as UC1
+usecase "Process Batches" as UC2
+usecase "Execute Data Pipelines" as UC3
+usecase "Run Online Machine Learning" as UC4
+usecase "Manage Cluster" as UC5
+usecase "Monitor Cluster Performance" as UC6
+usecase "Analyze Data in Real-Time" as UC7
+usecase "Detect Anomalies" as UC8
+}
+
+' Define actors with interactions to the use cases
+actor "Data Engineer" as DE
+actor "System Administrator" as SA
+actor "Data Analyst" as DA
+
+' Associations between actors and use cases
+DE --> UC1
+DE --> UC2
+DE --> UC3
+DE --> UC4
+
+SA --> UC5
+SA --> UC6
+
+DA --> UC7
+DA --> UC8
+
+@enduml
