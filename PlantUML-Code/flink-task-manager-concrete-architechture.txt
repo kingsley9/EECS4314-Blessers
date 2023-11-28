@@ -5,7 +5,11 @@ title Apache Flink Concrete Architecture - Task Manager
 package "flink" {
 
     [Core.ss]
-
+[FlinkClients.ss]
+[FlinkConnectors.ss]
+[FlinkTable.ss]
+[FlinkStreamingJava.ss]
+[FlinkStateBackends.ss]
     package [Runtime.ss] {
 
         [JobMaster.ss] as JMs
@@ -43,8 +47,25 @@ package "flink" {
             }
         }
 
-        [Runtime.ss] -up-> Core.ss
-
+        [Runtime.ss] -down-> [Core.ss]
+[FlinkStateBackends.ss] -left-> [Core.ss]
+[FlinkStreamingJava.ss] -down-> [Core.ss]
+[FlinkTable.ss] -left-> [Core.ss]
+[FlinkConnectors.ss] -up-> [Core.ss]
+[FlinkClients.ss] -down-> [Core.ss]
+[FlinkClients.ss] --> [Runtime.ss]
+[FlinkClients.ss] <-- [FlinkConnectors.ss]
+[FlinkClients.ss] <-- [FlinkTable.ss]
+[FlinkClients.ss] -->  [FlinkStreamingJava.ss]
+[FlinkTable.ss] --> [FlinkClients.ss]
+[FlinkConnectors.ss] <-up-> [FlinkTable.ss]
+[FlinkTable.ss] --> [FlinkStreamingJava.ss]
+[FlinkConnectors.ss] <-up-> [FlinkStreamingJava.ss]
+        [FlinkStateBackends.ss] <--> [Core.ss]
+        [FlinkStateBackends.ss] --> [FlinkStreamingJava.ss]
+        [FlinkStateBackends.ss] -up-> [Runtime.ss]
+        [FlinkStateBackends.ss] <-- [FlinkTable.ss]
+        [FlinkStateBackends.ss] <-- [FlinkConnectors.ss]
         Manager --> [Checkpoint.ss]
         Mem --> [Checkpoint.ss]
         T --> [Checkpoint.ss]

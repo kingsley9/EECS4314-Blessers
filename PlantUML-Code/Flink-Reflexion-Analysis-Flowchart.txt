@@ -1,0 +1,30 @@
+@startuml
+title Reflexion Analysis Model
+skinparam rectangle {
+    BackgroundColor<<Conceptual>> Wheat
+    BackgroundColor<<Concrete>> LightGreen
+    BackgroundColor<<Analysis>> LightBlue
+    BackgroundColor<<Final>> Gold
+}
+skinparam node {
+    BackgroundColor<<Compare>> Lavender
+}
+skinparam defaultTextAlignment center
+skinparam ArrowColor Black
+skinparam classAttributeIconSize 0
+
+rectangle "Begin Analysis" as BA 
+rectangle "Recover Conceptual\nArchitecture" as RCA 
+rectangle "Recover Concrete\nArchitecture" as RCoA 
+rectangle "Compare\nArchitectures" as CompA
+rectangle "Identify Convergences/\nDivergences" as ICD 
+rectangle "Investigate" as Inv 
+
+BA -down-> RCA : Analyze\ndesign documents
+BA -down-> RCoA : Analyze\nsource code
+RCA -down-> CompA : From\nconceptual recovery
+RCoA -down-> CompA : From\nconcrete recovery
+CompA -down-> ICD : Determine\nalignments and\ndifferences
+ICD -down-> Inv : Explore\ndiscrepancies
+Inv --> BA 
+@enduml
